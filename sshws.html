@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BEAD VPN CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f7fc;--surface:#fff;--surface2:#f8fbff;--line:#dde7f6;--line2:#cbd9ef;
+      --text:#162033;--muted:#697892;--blue:#4168e8;--blue2:#2f55d6;--green:#04977f;
+      --red:#e84067;--amber:#e78318;--shadow:0 16px 42px rgba(38,57,104,.10);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Kanit,system-ui,-apple-system,Segoe UI,sans-serif;font-size:14px;font-weight:400;letter-spacing:0}
+    button,input,textarea{font:inherit}button{cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:232px minmax(0,1fr);overflow-x:hidden}
+    .side{background:#fff;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:22px}
+    .brand{display:flex;align-items:center;gap:10px;padding:0 4px 22px}
+    .mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#0c1430 0 52%,#1b2b59 53% 66%,#1ac9d8 67% 70%,#f2b43e 71%);border:1px solid #14213f;position:relative;overflow:hidden;box-shadow:0 14px 26px rgba(31,45,90,.18)}
+    .mark:before{content:"";position:absolute;left:9px;top:9px;width:18px;height:18px;border-radius:50%;background:#dff7ff;border:3px solid #0c1430;box-shadow:13px 10px 0 -6px #fff,0 0 0 7px rgba(26,201,216,.12)}
+    .mark:after{content:"VPN";position:absolute;right:5px;bottom:5px;color:#fff;font-weight:600;font-size:10px;letter-spacing:0;text-shadow:0 2px 0 #0c1430}
+    .brand b{display:block;font-size:14px;font-weight:600;line-height:1.1}.brand span{display:block;color:var(--blue);font-size:10px;font-weight:500;letter-spacing:.08em;margin-top:2px}
+    .nav-group{display:grid;gap:7px}.nav-title{color:#75849c;font-size:10.5px;font-weight:400;padding:0 8px}
+    .nav-btn{border:0;background:transparent;color:#32425a;border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;text-align:left;font-weight:400;transition:transform .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease}
+    .nav-btn:hover{background:#f2f6ff;transform:translateX(2px)}
+    .nav-btn.active{background:linear-gradient(135deg,var(--blue),#5578f0);color:#fff;box-shadow:0 10px 22px rgba(65,104,232,.24)}
+    .ico{width:17px;height:17px;border:1.4px solid currentColor;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex:0 0 auto}
+    .content{min-width:0;display:flex;flex-direction:column}
+    .top{height:60px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:8}
+    .top h1{margin:0;font-size:18px;font-weight:500}.top-left{display:flex;align-items:center;gap:12px}.back{width:34px;height:34px;border:1px solid #cfdef5;background:#fff;border-radius:10px;color:#4168e8;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,opacity .18s ease}.back:hover{transform:translateX(-2px);box-shadow:0 8px 18px rgba(38,57,104,.09);border-color:#9db5eb}.back.is-idle{opacity:.46;color:#8aa0bd}
+    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{border:1px solid var(--line);background:#fff;color:#26364e;min-height:38px;border-radius:10px;padding:0 14px;font-weight:400;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(38,57,104,.09);border-color:#b9c9e8}
+    .btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:var(--blue);color:#fff;box-shadow:0 10px 20px rgba(65,104,232,.20)}
+    .btn.green{color:var(--green)}.btn.red{color:var(--red);background:#fff4f6;border-color:#ffd6df}.btn.amber{color:var(--amber)}
+    .main{min-width:0;padding:22px;display:grid;gap:22px}
+    .page{display:none;animation:fadeUp .28s ease both}.page.active{display:grid;gap:22px}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .hero{border:1px solid #cfe0ff;border-radius:18px;min-height:190px;padding:30px 26px;background:
+      linear-gradient(105deg,rgba(255,255,255,.98) 0 44%,rgba(239,248,255,.94) 45% 68%,rgba(215,255,244,.76) 100%),
+      linear-gradient(#dcecff 1px,transparent 1px),linear-gradient(90deg,#dcecff 1px,transparent 1px);
+      background-size:auto,42px 42px,42px 42px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .tag{display:inline-flex;align-items:center;gap:7px;border:1px solid #cfe0ff;background:#eff5ff;color:var(--blue);border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:500}.tag:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue)}
+    .hero h2{font-size:30px;font-weight:600;line-height:1;margin:14px 0 10px}.hero h2 span{color:var(--blue)}.hero p{margin:0;color:#5e6e86;line-height:1.7;max-width:760px;overflow-wrap:anywhere}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.chip{border:1px solid #cfdef5;background:#fff;border-radius:999px;padding:7px 12px;color:#3158e8;font-size:11.5px}
+    .logo-card{width:150px;height:150px;border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(241,248,255,.72));border:1px solid #d1e1fb;display:flex;align-items:center;justify-content:center;box-shadow:0 18px 34px rgba(38,57,104,.12)}
+    .crest{width:108px;height:108px;border-radius:28px;background:linear-gradient(140deg,#0b142b 0 54%,#17346f 55% 68%,#18c7d8 69% 72%,#f2b43e 73%);border:3px solid #17243e;position:relative;overflow:hidden;box-shadow:inset 0 0 0 7px #fff,0 14px 28px rgba(23,36,62,.15)}.crest:before{content:"";position:absolute;left:30px;top:22px;width:38px;height:38px;border-radius:50%;background:#dff7ff;border:4px solid #111c32;box-shadow:0 0 0 10px rgba(24,199,216,.12)}.crest:after{content:"BEAD";position:absolute;left:0;right:0;bottom:25px;text-align:center;color:#fff;font-weight:600;font-size:22px;text-shadow:2px 2px 0 #111827}.crest span{position:absolute;left:0;right:0;bottom:11px;text-align:center;color:#f8d879;font-size:11px;font-weight:500;letter-spacing:.08em}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 28px rgba(38,57,104,.075)}
+    .stat{min-height:84px;padding:16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}.stat.primary{background:linear-gradient(135deg,#315be4,#5578ef);color:#fff;border-color:#5578ef}.stat:after{content:"";position:absolute;right:-26px;bottom:-40px;width:96px;height:96px;border-radius:50%;background:#eef4ff}.stat.primary:after{background:rgba(255,255,255,.13)}
+    .stat .sq{z-index:1;width:46px;height:46px;border-radius:12px;background:#eef5ff;border:1px solid #d7e5fb;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:500}.stat.primary .sq{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.22);color:#fff}
+    .stat label{display:block;color:#6d7b92;font-size:12px;margin-bottom:2px}.stat.primary label{color:#edf2ff}.stat strong{font-size:24px;font-weight:600;line-height:1}.stat .meta{z-index:1}.stat.red strong{color:var(--red)}
+    .filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.filter{padding:14px}.filter label{display:block;color:var(--blue);font-size:12px;font-weight:500;margin-bottom:8px}.input{width:100%;border:1px solid #d8e4f6;background:#f8fbff;border-radius:11px;padding:12px 13px;outline:none;color:#18243a;transition:border-color .18s ease,box-shadow .18s ease}.input:focus{border-color:#7896f5;box-shadow:0 0 0 4px rgba(65,104,232,.10)}
+    .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.tabs{display:flex;gap:7px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:5px;flex-wrap:wrap}.tab{border:0;background:transparent;border-radius:9px;padding:8px 13px;color:#53647c;font-weight:400;transition:.18s ease}.tab.active,.tab:hover{background:#eef4ff;color:var(--blue)}
+    .table-card{overflow:hidden}.table-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.table-head h3{margin:0;font-size:16px;font-weight:500}.table-head p{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+    .table-wrap{overflow:auto;max-width:100%}table{width:100%;min-width:930px;border-collapse:separate;border-spacing:0}th,td{padding:14px 16px;border-bottom:1px solid #edf2fb;text-align:left;vertical-align:middle}th{font-size:11.5px;font-weight:500;color:#6b7890;background:#fbfdff}tbody tr{transition:background .18s ease,box-shadow .18s ease}tbody tr:hover{background:#fbfdff}td b{font-weight:500}.sub{display:block;color:#6b7890;font-size:11.5px;margin-top:3px}.user-cell{display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#eef4ff,#e8fbf5);border:1px solid #d7e5fb;color:#3158e8;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:11.5px;font-weight:500}.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.badge.ok{background:#e8fbf5;color:#008c76}.badge.bad{background:#fff0f3;color:var(--red)}.expire{display:inline-flex;align-items:center;gap:8px;min-width:150px}.expire-date{font-size:14px;color:#162033}.expire-chip{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:11.5px;font-weight:500;background:#eef4ff;color:#3158e8}.expire-chip.hot{background:#fff5e8;color:#d66a00}.expire-chip.bad{background:#fff0f3;color:var(--red)}.expire-chip.none{background:#f4f7fb;color:#697892}.link-stack{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.row-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mini{border:1px solid #d8e4f6;background:#fff;border-radius:10px;min-height:34px;padding:0 12px;color:#43556f;font-weight:500;display:inline-flex;align-items:center;gap:7px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}.mini:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(38,57,104,.08);border-color:#adc1e4}.mini.copy{background:#ecfbf8;color:var(--green);border-color:#aee6d9}.mini.renew{background:#eef4ff;color:#3158e8;border-color:#c7d7fb}.mini.danger{background:#fff4f6;color:var(--red);border-color:#ffd4de}.mini:disabled{opacity:.62;background:#f4f7fb;color:#8a97aa;box-shadow:none;transform:none}.mini .sym{font-size:13px;line-height:1}
+    .create-layout{display:grid;grid-template-columns:minmax(0,1.05fr) 340px;gap:18px;align-items:start}.form-panel{padding:18px}.section-title{font-size:15px;font-weight:500;margin:0 0 12px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:7px}.field.wide{grid-column:1/-1}.field label{color:#5f6f86;font-size:12.5px;font-weight:500}.field textarea{min-height:132px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;line-height:1.55}
+    .choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.choice{border:1px solid #d8e4f6;background:#fff;border-radius:12px;padding:12px;text-align:left;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}.choice:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(38,57,104,.08)}.choice.active{border-color:#7594f4;background:#eef4ff;box-shadow:0 0 0 3px rgba(65,104,232,.08)}.choice strong{display:block;font-weight:500}.choice span{display:block;color:var(--muted);font-size:11.5px;margin-top:3px}
+    .summary{padding:16px;position:sticky;top:80px}.summary h3{font-weight:500;margin:0 0 10px}.summary-box{background:#f2fffb;border:1px solid #bcebdd;color:#0b7767;border-radius:12px;padding:13px;line-height:1.6}.summary-box b{display:block;font-weight:500}.alert{display:none;border-radius:11px;padding:11px 13px;margin-top:12px}.alert.show{display:block}.alert.ok{background:#ebfbf6;border:1px solid #bcebdd;color:#008979}.alert.err{background:#fff0f3;border:1px solid #ffd0dd;color:var(--red)}.link-box{display:none;margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}.link-box.show{display:block}.link-head{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f8fbff;border-bottom:1px solid var(--line);padding:11px 12px}.link-code{background:#101827;color:#9fffea;padding:12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;max-height:108px;overflow:auto;word-break:break-all}
+    .profile-grid,.settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.box{padding:16px}.box h3{margin:0 0 7px;font-size:16px;font-weight:500}.box p{margin:0 0 11px;color:var(--muted);line-height:1.6}.box code{display:block;background:#f8fbff;border:1px solid #dce7f7;border-radius:11px;padding:11px;max-height:132px;overflow:auto;white-space:pre-wrap;font-size:11.5px}
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.30);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.open{display:flex}.dialog{width:min(430px,100%);background:#fff;border-radius:16px;padding:18px;border:1px solid #fff;box-shadow:0 22px 70px rgba(15,23,42,.22)}.dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.dialog h3{margin:0;font-size:17px;font-weight:500}.x{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:9px}.toast{position:fixed;right:18px;bottom:18px;background:#101827;color:#fff;border-radius:12px;padding:11px 14px;display:none;z-index:40}.toast.show{display:block;animation:fadeUp .22s ease both}
+    @media(max-width:1100px){.app{display:block}.side{display:block}.nav-group{display:none}.top{height:auto;align-items:flex-start;flex-direction:column;padding:14px 16px}.top-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:16px}.hero{min-height:auto}.logo-card{display:none}.stats,.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.create-layout{grid-template-columns:1fr}.summary{position:static}.profile-grid,.settings-grid{grid-template-columns:1fr}}
+    @media(max-width:640px){.main{padding:14px}.hero{padding:22px 16px}.hero h2{font-size:27px}.hero p{font-size:13.5px}.stats,.filters,.form-grid,.choice-grid{grid-template-columns:1fr}.top-actions{grid-template-columns:1fr 1fr}.btn{padding:0 10px}.tabs{width:100%;overflow:auto;flex-wrap:nowrap}.tab{white-space:nowrap}.modal{padding:0}.dialog{width:100%;height:100%;border-radius:0;overflow:auto}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="mark"></div><div><b>BEAD VPN</b><span>VPN CRM</span></div></div>
+    <div class="nav-group">
+      <div class="nav-title">ระบบจัดการหลัก</div>
+      <button class="nav-btn active" data-page="dashboard"><span class="ico">D</span>ฐานข้อมูล SSH</button>
+      <button class="nav-btn" data-page="users"><span class="ico">U</span>จัดการผู้ใช้งาน</button>
+      <button class="nav-btn" data-page="create"><span class="ico">+</span>สร้าง SSH ใหม่</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-title">ระบบเซิร์ฟเวอร์</div>
+      <button class="nav-btn" data-page="profiles"><span class="ico">P</span>จัดการเพย์โหลด</button>
+      <button class="nav-btn" data-page="settings"><span class="ico">S</span>ตั้งค่าระบบ</button>
+    </div>
+  </aside>
+  <section class="content">
+    <header class="top">
+      <div class="top-left"><button class="back is-idle" id="back-btn" type="button" title="ย้อนกลับ">‹</button><h1 id="page-title">ฐานข้อมูล SSH</h1></div>
+      <div class="top-actions">
+        <button class="btn" id="updated-pill">อัปเดต --:--</button>
+        <button class="btn" data-page-jump="users">สรุปรายชื่อ</button>
+        <button class="btn red" id="expired-pill">หมดอายุ 0</button>
+        <button class="btn green" id="refresh-btn">รีเฟรชข้อมูล</button>
+        <button class="btn" id="logout-btn">ลงชื่อออก</button>
+      </div>
+    </header>
+    <main class="main">
+      <section class="page active" id="page-dashboard">
+        <div class="hero">
+          <div>
+            <span class="tag">BEAD COMMAND</span>
+            <h2>BEAD <span>VPN</span></h2>
+            <p>ศูนย์ควบคุม SSH, เพย์โหลด, ลิงก์ NPV/DarkTunnel และสถานะเซิร์ฟเวอร์ในหน้าจอเดียว</p>
+            <div class="chips"><span class="chip">Secure Ops</span><span class="chip">SSH Link Saver</span><span class="chip">X-UI Sync</span></div>
+          </div>
+          <div class="logo-card"><div class="crest"><span>VPN</span></div></div>
+        </div>
+        <div class="stats">
+          <div class="card stat primary"><div class="sq">U</div><div class="meta"><label>กำลังใช้งาน</label><strong id="stat-users">--</strong></div></div>
+          <div class="card stat"><div class="sq">O</div><div class="meta"><label>ออนไลน์ตอนนี้</label><strong id="stat-online">--</strong></div></div>
+          <div class="card stat"><div class="sq">S</div><div class="meta"><label>เซิร์ฟเวอร์</label><strong id="stat-services">--</strong></div></div>
+          <div class="card stat red"><div class="sq">E</div><div class="meta"><label>ใกล้หมดอายุ</label><strong id="stat-expiring">--</strong></div></div>
+        </div>
+        <div class="filters">
+          <div class="card filter"><label>วันที่ทำมา</label><input class="input" type="date"></div>
+          <div class="card filter"><label>วันหมดอายุ</label><input class="input" type="date"></div>
+          <div class="card filter"><label>เซิร์ฟเวอร์</label><input class="input" id="server-search" readonly></div>
+          <div class="card filter"><label>ค้นหาผู้ใช้งาน</label><input class="input" id="dash-search" placeholder="ค้นหา username"></div>
+        </div>
+        <div class="bar">
+          <div class="tabs">
+            <button class="tab active" data-filter="all">ทั้งหมด (<span id="count-all">0</span>)</button>
+            <button class="tab" data-filter="active">ใช้งานอยู่ (<span id="count-active">0</span>)</button>
+            <button class="tab" data-filter="saved">มีลิงก์ (<span id="count-saved">0</span>)</button>
+            <button class="tab" data-filter="expired">หมดอายุ (<span id="count-expired">0</span>)</button>
+          </div>
+          <div class="top-actions"><button class="btn amber" id="select-expired">เลือกลูกค้าหมดอายุ</button><button class="btn red" id="delete-expired">ลบรายชื่อที่ยังไม่ซื้อ</button><button class="btn primary" data-page-jump="create">สร้างลูกค้าใหม่</button></div>
+        </div>
+        <div class="card table-card">
+          <div class="table-head"><div><h3>รายชื่อ SSH Users</h3><p>กด Copy เพื่อดึงลิงก์ที่บันทึกไว้กลับมาใช้งาน</p></div></div>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Username</th><th>หมดอายุ</th><th>สถานะ</th><th>ลิงก์</th><th>Action</th></tr></thead><tbody id="users-body"><tr><td colspan="6">กำลังโหลด...</td></tr></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-create">
+        <div class="create-layout">
+          <div class="card form-panel">
+            <h2 class="section-title">สร้าง SSH User</h2>
+            <div class="form-grid">
+              <div class="field"><label>Username</label><input class="input" id="ssh-user" placeholder="username" autocomplete="off"></div>
+              <div class="field"><label>Password</label><input class="input" id="ssh-pass" type="password" placeholder="password" autocomplete="off"></div>
+              <div class="field"><label>จำนวนวัน</label><input class="input" id="ssh-days" type="number" value="30" min="1"></div>
+              <div class="field"><label>ลิมิตไอพี</label><input class="input" id="ssh-ip" type="number" value="2" min="1"></div>
+            </div>
+            <h2 class="section-title" style="margin-top:20px">Payload Profile</h2>
+            <div class="choice-grid" id="profile-choices">
+              <button class="choice active" data-profile="ais"><strong>AIS Working</strong><span>search.ais.co.th:80</span></button>
+              <button class="choice" data-profile="true"><strong>TRUE Twitter</strong><span>help.x.com</span></button>
+              <button class="choice" data-profile="custom"><strong>Custom Payload</strong><span>ใส่เอง</span></button>
+            </div>
+            <div id="custom-box" style="display:none;margin-top:14px">
+              <div class="form-grid">
+                <div class="field"><label>Profile name</label><input class="input" id="custom-name" value="CUSTOM AIS"></div>
+                <div class="field"><label>Proxy host:port</label><input class="input" id="custom-proxy" value="topup.ais.co.th:80"></div>
+                <div class="field wide"><label>Payload</label><textarea class="input" id="custom-payload" spellcheck="false"></textarea></div>
+              </div>
+              <div class="top-actions" style="justify-content:flex-start;margin-top:12px"><button class="btn" data-fill="topup">TOPUP sample</button><button class="btn" data-fill="ais">AIS working</button><button class="btn" data-fill="clear">Clear</button></div>
+            </div>
+            <h2 class="section-title" style="margin-top:20px">Application</h2>
+            <div class="choice-grid" id="app-choices">
+              <button class="choice active" data-app="npv"><strong>NPV Tunnel</strong><span>npvt-ssh://</span></button>
+              <button class="choice" data-app="dark"><strong>DarkTunnel</strong><span>darktunnel://</span></button>
+            </div>
+            <h2 class="section-title" style="margin-top:20px">Port</h2>
+            <div class="choice-grid" id="port-choices">
+              <button class="choice active" data-port="80"><strong>Port 80</strong><span>แนะนำ</span></button>
+              <button class="choice" data-port="443"><strong>Port 443</strong><span>สำรอง</span></button>
+            </div>
+          </div>
+          <aside class="card summary">
+            <h3>สรุปก่อนสร้าง</h3>
+            <div class="summary-box" id="create-summary"></div>
+            <div class="alert" id="create-alert"></div>
+            <div class="link-box" id="link-box"><div class="link-head"><b id="link-title">Generated link</b><button class="btn primary" id="copy-new-link">Copy</button></div><div class="link-code" id="link-code"></div></div>
+            <div class="top-actions" style="margin-top:14px;justify-content:flex-end"><button class="btn" id="clear-create">ล้างฟอร์ม</button><button class="btn primary" id="create-btn">สร้าง User</button></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="page-users">
+        <div class="card filter"><label>ค้นหารายชื่อ</label><input class="input" id="user-search" placeholder="ค้นหา username"></div>
+        <div class="card table-card"><div class="table-head"><div><h3>จัดการผู้ใช้งาน SSH</h3><p>ต่ออายุ ลบ และคัดลอกลิงก์ที่สร้างไว้</p></div><button class="btn primary" data-page-jump="create">สร้าง SSH ใหม่</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Username</th><th>หมดอายุ</th><th>สถานะ</th><th>ลิงก์</th><th>Action</th></tr></thead><tbody id="users-body-alt"><tr><td colspan="6">กำลังโหลด...</td></tr></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-profiles">
+        <div class="profile-grid">
+          <div class="card box"><h3>AIS Working</h3><p>ค่าเริ่มต้นจากเครื่องที่ใช้งานได้</p><span class="badge ok">Recommended</span><code id="ais-code"></code></div>
+          <div class="card box"><h3>TRUE Twitter</h3><p>โปรไฟล์สำรองสำหรับ TRUE</p><span class="badge">Preset</span><code id="true-code"></code></div>
+          <div class="card box"><h3>Custom Payload</h3><p>แก้ proxy/payload เองตอนสร้าง user</p><span class="badge bad">Advanced</span><code id="custom-code"></code></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="settings-grid"><div class="card box"><h3>Host</h3><p id="set-host">--</p></div><div class="card box"><h3>API</h3><p>/api</p></div><div class="card box"><h3>Saved Links</h3><p>เก็บบนเซิร์ฟเวอร์และดึงผ่าน session admin เท่านั้น</p></div></div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<div class="modal" id="renew-modal"><div class="dialog"><div class="dialog-head"><h3>ต่ออายุ SSH</h3><button class="x" id="close-renew">X</button></div><div class="field"><label id="renew-user-label">--</label><input class="input" id="renew-days" type="number" value="30" min="1"></div><div class="alert" id="renew-alert"></div><div class="top-actions" style="justify-content:flex-end;margin-top:12px"><button class="btn" id="cancel-renew">ยกเลิก</button><button class="btn primary" id="renew-btn">ต่ออายุ</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="config.js" onerror="window.CHAIYA_CONFIG={}"></script>
+<script>
+const CFG=window.CHAIYA_CONFIG||{};const HOST=CFG.host||location.hostname;const API='/api';const SESSION_KEY='chaiya_auth';
+const session=(()=>{try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'{}')}catch(e){return{}}})();if(!session.user||!session.pass||Date.now()>=(session.exp||0)){sessionStorage.removeItem(SESSION_KEY);location.replace('index.html')}
+const PAYLOADS={ais:{name:'AIS-NOPRO/64-128K',proxy:'search.ais.co.th:80',payload:'POST /cdn-cgi/speculation HTTP/1.1[crlf]Host: search.ais.co.th[crlf]User-Agent: [ua][crlf][crlf][split][cr]PATCH /ssh HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]'},true:{name:'TRUE TWITTER',proxy:'104.18.39.24:80',payload:'POST / HTTP/1.1[crlf]Host:help.x.com[crlf]X-Online-Host:help.x.com[crlf]X-Forward-Host:help.x.com[crlf]User-Agent: [ua][crlf]Connection: keep-alive[crlf][crlf][split][cr]PATCH / HTTP/1.1[crlf]Host: [host][crlf]Upgrade: websocket[crlf]Connection: Upgrade[crlf]X-Online-Host: [host][crlf][crlf]'},custom:{name:'CUSTOM AIS',proxy:'topup.ais.co.th:80',payload:'POST /cdn-cgi/speculation HTTP/1.1[crlf]Host: topup.ais.co.th[crlf]User-Agent: [ua] [crlf][crlf][instant_split]PATCH /ssh HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]Upgrade: websocket [crlf][crlf]'}};
+let state={page:'dashboard',history:[],filter:'all',profile:'ais',app:'npv',port:'80',users:[],lastLink:'',renewUser:''};
+const $=id=>document.getElementById(id);function authBody(o){return Object.assign({},o||{},{auth_user:session.user||'',auth_pass:session.pass||''})}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function js(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.className='toast show';setTimeout(()=>t.className='toast',1500)}
+function showAlert(id,msg,type){const el=$(id);el.className='alert show '+(type||'ok');el.textContent=msg}function hideAlert(id){const el=$(id);if(el)el.className='alert'}
+async function post(path,body){const r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});const d=await r.json().catch(()=>({}));if(!r.ok||d.ok===false)throw new Error(d.error||('HTTP '+r.status));return d}
+function setPage(page,remember=true){if(!$('page-'+page))return;if(remember&&state.page&&state.page!==page)state.history.push(state.page);state.page=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$('page-'+page).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('page-title').textContent={dashboard:'ฐานข้อมูล SSH',users:'จัดการผู้ใช้งาน',create:'สร้าง SSH ใหม่',profiles:'จัดการเพย์โหลด',settings:'ตั้งค่าระบบ'}[page]||'BEAD VPN';$('back-btn').classList.toggle('is-idle',page==='dashboard'&&state.history.length===0);window.scrollTo({top:0,behavior:'smooth'});if(page==='create')setTimeout(()=>$('ssh-user').focus(),180)}
+function goPanelBack(){const prev=state.history.pop();if(prev){setPage(prev,false);return}if(state.page!=='dashboard'){setPage('dashboard',false);return}toast('อยู่หน้าแรกแล้ว')}
+function getProfile(){if(state.profile!=='custom')return PAYLOADS[state.profile]||PAYLOADS.ais;const name=($('custom-name').value||PAYLOADS.custom.name).trim()||PAYLOADS.custom.name;const proxy=($('custom-proxy').value||PAYLOADS.custom.proxy).trim()||PAYLOADS.custom.proxy;const payload=($('custom-payload').value||'').trim()||PAYLOADS.custom.payload;return{name,proxy,payload}}
+function validateProfile(p){if(!p.proxy||!p.proxy.includes(':'))return'Proxy ต้องเป็น host:port';if(!p.payload)return'กรุณาใส่ Payload';if(!p.payload.includes('[host]'))return'Payload ขาด [host]';if(!p.payload.includes('[ua]'))return'Payload ขาด [ua]';return''}
+function buildNpvLink(user,pass,p){const d={sshConfigType:'SSH-Proxy-Payload',remarks:p.name+'-'+user,sshHost:HOST,sshPort:80,sshUsername:user,sshPassword:pass,sni:'',tlsVersion:'DEFAULT',httpProxy:p.proxy,authenticateProxy:false,proxyUsername:'',proxyPassword:'',payload:p.payload,dnsMode:'UDP',dnsServer:'',nameserver:'',publicKey:'',udpgwPort:7300,udpgwTransparentDNS:true};return'npvt-ssh://'+btoa(unescape(encodeURIComponent(JSON.stringify(d))))}
+function buildDarkLink(user,pass,p){const d={type:'SSH',name:p.name+'-'+user,sshTunnelConfig:{sshConfig:{host:HOST,port:parseInt(state.port,10)||80,username:user,password:pass},injectConfig:{mode:'PROXY',proxyHost:(p.proxy||'').split(':')[0],proxyPort:parseInt((p.proxy||'').split(':')[1]||'80',10),payload:p.payload}}};return'darktunnel://'+btoa(unescape(encodeURIComponent(JSON.stringify(d))))}
+function updateChoices(){document.querySelectorAll('#profile-choices .choice').forEach(b=>b.classList.toggle('active',b.dataset.profile===state.profile));document.querySelectorAll('#app-choices .choice').forEach(b=>b.classList.toggle('active',b.dataset.app===state.app));document.querySelectorAll('#port-choices .choice').forEach(b=>b.classList.toggle('active',b.dataset.port===state.port));$('custom-box').style.display=state.profile==='custom'?'block':'none'}
+function updateSummary(){const p=getProfile(),err=validateProfile(p);$('create-summary').innerHTML=`<b>${esc(p.name)}</b><span>${esc(state.app==='npv'?'NPV Tunnel':'DarkTunnel')} / Port ${esc(state.port)} / ${esc(p.proxy)}</span><span>${err?esc(err):'พร้อมสร้างและบันทึกลิงก์'}</span>`}
+function fillPreset(k){if(k==='clear'){$('custom-payload').value='';updateSummary();return}const p=k==='ais'?PAYLOADS.ais:PAYLOADS.custom;$('custom-name').value=p.name;$('custom-proxy').value=p.proxy;$('custom-payload').value=p.payload;updateSummary()}
+function clearCreate(){$('ssh-user').value='';$('ssh-pass').value='';$('ssh-days').value='30';$('ssh-ip').value='2';hideAlert('create-alert');$('link-box').classList.remove('show');updateSummary()}
+async function createSSH(){const user=$('ssh-user').value.trim(),pass=$('ssh-pass').value.trim(),days=parseInt($('ssh-days').value,10)||30,ipLimit=parseInt($('ssh-ip').value,10)||2,p=getProfile(),err=validateProfile(p);if(!user)return showAlert('create-alert','กรุณาใส่ username','err');if(!pass)return showAlert('create-alert','กรุณาใส่ password','err');if(err)return showAlert('create-alert',err,'err');const btn=$('create-btn');btn.disabled=true;btn.textContent='กำลังสร้าง...';hideAlert('create-alert');try{await post('/create_ssh',{user,password:pass,days,ip_limit:ipLimit});const link=state.app==='npv'?buildNpvLink(user,pass,p):buildDarkLink(user,pass,p);const appLabel=state.app==='npv'?'Npvt':'DarkTunnel';try{await post('/save_ssh_link',authBody({user,link,app:appLabel,profile:p.name,proxy:p.proxy,port:state.port}));showAlert('create-alert','สร้าง '+user+' และบันทึกลิงก์แล้ว','ok')}catch(e){showAlert('create-alert','สร้าง '+user+' แล้ว แต่บันทึกลิงก์ไม่สำเร็จ: '+e.message,'err')}state.lastLink=link;$('link-title').textContent=appLabel+' link for '+user;$('link-code').textContent=link;$('link-box').classList.add('show');$('ssh-user').value='';$('ssh-pass').value='';await loadUsers();await loadOverview()}catch(e){showAlert('create-alert',e.message,'err')}finally{btn.disabled=false;btn.textContent='สร้าง User'}}
+async function copyText(text,btn){try{await navigator.clipboard.writeText(text);if(btn){const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1200)}toast('คัดลอกแล้ว')}catch(e){prompt('Copy link:',text)}}
+async function copySaved(user,btn){const old=btn.textContent;btn.disabled=true;btn.textContent='Loading';try{const d=await post('/get_ssh_link',authBody({user}));await copyText(d.link,btn)}catch(e){alert('Copy ไม่สำเร็จ: '+e.message);btn.textContent=old}finally{setTimeout(()=>{btn.disabled=false;btn.textContent=old},1200)}}
+async function deleteUser(user){if(!confirm('ลบ SSH user "'+user+'"?'))return;await post('/delete_ssh',{user});await loadUsers();await loadOverview();toast('ลบแล้ว')}
+function openRenew(u){state.renewUser=u;$('renew-user-label').textContent=u;$('renew-days').value='30';hideAlert('renew-alert');$('renew-modal').classList.add('open')}function closeRenew(){$('renew-modal').classList.remove('open');state.renewUser=''}
+async function extendUser(){const days=parseInt($('renew-days').value,10)||30,btn=$('renew-btn');btn.disabled=true;try{const d=await post('/extend_ssh',{user:state.renewUser,days});showAlert('renew-alert','ต่ออายุถึง '+(d.exp||'updated'),'ok');await loadUsers();await loadOverview();setTimeout(closeRenew,750)}catch(e){showAlert('renew-alert',e.message,'err')}finally{btn.disabled=false}}
+function calcCounts(){const now=new Date().toISOString().slice(0,10);let active=0,expired=0,saved=0,expiring=0;state.users.forEach(u=>{const ex=u.exp&&u.exp<now;if(ex)expired++;else if(u.active!==false)active++;if(u.has_link)saved++;if(u.exp){const d=Math.ceil((new Date(u.exp)-Date.now())/86400000);if(d>=0&&d<=3)expiring++}});$('count-all').textContent=state.users.length;$('count-active').textContent=active;$('count-expired').textContent=expired;$('count-saved').textContent=saved;$('stat-expiring').textContent=expiring;$('expired-pill').textContent='หมดอายุ '+expired}
+function filteredUsers(searchId){const now=new Date().toISOString().slice(0,10),q=($(searchId)?.value||'').toLowerCase();return state.users.filter(u=>{const name=(u.user||'').toLowerCase();if(q&&!name.includes(q))return false;if(state.filter==='active')return u.active!==false&&!(u.exp&&u.exp<now);if(state.filter==='expired')return u.exp&&u.exp<now;if(state.filter==='saved')return!!u.has_link;return true})}
+function initials(name){return String(name||'?').trim().slice(0,2).toUpperCase()}
+function dayDiff(exp){const today=new Date();today.setHours(0,0,0,0);const target=new Date(exp+'T00:00:00');return Math.round((target-today)/86400000)}
+function expInfo(exp){if(!exp)return{date:'ไม่จำกัด',text:'ไม่จำกัด',cls:'none'};const days=dayDiff(exp);if(days<0)return{date:exp,text:'หมดอายุแล้ว',cls:'bad'};if(days===0)return{date:exp,text:'วันนี้',cls:'hot'};if(days<=3)return{date:exp,text:'เหลือ '+days+' วัน',cls:'hot'};return{date:exp,text:'เหลือ '+days+' วัน',cls:''}}
+function rowHtml(u,i){const info=expInfo(u.exp),expired=info.cls==='bad',active=u.active!==false&&!expired,user=esc(u.user||''),userJs=js(u.user||''),profile=esc(u.link_profile||'SSH user');const link=u.has_link?`<div class="link-stack"><button class="mini copy" onclick="copySaved('${userJs}',this)"><span class="sym">⧉</span>คัดลอกลิงก์</button><span class="sub">${esc(u.link_app||'Saved')}</span></div>`:`<div class="link-stack"><button class="mini" disabled><span class="sym">-</span>ยังไม่มีลิงก์</button><span class="sub">สร้างใหม่เพื่อบันทึก</span></div>`;return`<tr><td>${i+1}</td><td><div class="user-cell"><span class="avatar">${esc(initials(u.user))}</span><span><b>${user}</b><span class="sub">${profile}</span></span></div></td><td><div class="expire"><span><b class="expire-date">${esc(info.date)}</b><span class="sub">วันหมดอายุ</span></span><span class="expire-chip ${info.cls}">${esc(info.text)}</span></div></td><td><span class="badge ${active?'ok':'bad'}">${active?'ใช้งานอยู่':'หมดอายุ'}</span></td><td>${link}</td><td><div class="row-actions"><button class="mini renew" onclick="openRenew('${userJs}')"><span class="sym">+</span>ต่ออายุ</button><button class="mini danger" onclick="deleteUser('${userJs}')"><span class="sym">×</span>ลบ</button></div></td></tr>`}
+function renderUsers(){calcCounts();const dash=filteredUsers('dash-search');$('users-body').innerHTML=dash.length?dash.map(rowHtml).join(''):'<tr><td colspan="6" style="text-align:center;color:#697892;padding:28px">ไม่มีรายชื่อ</td></tr>';const q=($('user-search')?.value||'').toLowerCase();const alt=state.users.filter(u=>(u.user||'').toLowerCase().includes(q));$('users-body-alt').innerHTML=alt.length?alt.map(rowHtml).join(''):'<tr><td colspan="6" style="text-align:center;color:#697892;padding:28px">ไม่มีรายชื่อ</td></tr>'}
+async function loadUsers(){const d=await fetch(API+'/users').then(r=>r.json());state.users=d.users||[];$('stat-users').textContent=state.users.length;renderUsers()}
+async function loadOverview(){try{const st=await fetch(API+'/status').then(r=>r.json());$('stat-online').textContent=st.online_count??st.online??'--';const sv=st.services||{};$('stat-services').textContent=Object.keys(sv).filter(k=>sv[k]).length;$('updated-pill').textContent='อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});$('stat-users').textContent=st.total_users??state.users.length}catch(e){}}
+function bind(){document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.page)));document.querySelectorAll('[data-page-jump]').forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.pageJump)));$('back-btn').onclick=goPanelBack;$('refresh-btn').onclick=async()=>{await loadUsers();await loadOverview();toast('รีเฟรชแล้ว')};$('logout-btn').onclick=()=>{sessionStorage.removeItem(SESSION_KEY);location.replace('index.html')};$('dash-search').addEventListener('input',renderUsers);$('user-search').addEventListener('input',renderUsers);document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.filter;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));renderUsers()}));$('profile-choices').addEventListener('click',e=>{const b=e.target.closest('[data-profile]');if(!b)return;state.profile=b.dataset.profile;updateChoices();updateSummary()});$('app-choices').addEventListener('click',e=>{const b=e.target.closest('[data-app]');if(!b)return;state.app=b.dataset.app;updateChoices();updateSummary()});$('port-choices').addEventListener('click',e=>{const b=e.target.closest('[data-port]');if(!b)return;state.port=b.dataset.port;updateChoices();updateSummary()});document.querySelectorAll('[data-fill]').forEach(b=>b.addEventListener('click',()=>fillPreset(b.dataset.fill)));['custom-name','custom-proxy','custom-payload'].forEach(id=>$(id).addEventListener('input',updateSummary));$('create-btn').onclick=createSSH;$('clear-create').onclick=clearCreate;$('copy-new-link').onclick=e=>copyText(state.lastLink,e.currentTarget);$('close-renew').onclick=closeRenew;$('cancel-renew').onclick=closeRenew;$('renew-modal').addEventListener('click',e=>{if(e.target.id==='renew-modal')closeRenew()});$('renew-btn').onclick=extendUser;$('select-expired').onclick=()=>{state.filter='expired';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.filter==='expired'));renderUsers()};$('delete-expired').onclick=()=>toast('เลือกจากตารางแล้วลบทีละรายชื่อเพื่อความปลอดภัย')}
+async function init(){$('server-search').value=HOST;$('set-host').textContent=HOST;$('ais-code').textContent=PAYLOADS.ais.payload;$('true-code').textContent=PAYLOADS.true.payload;$('custom-code').textContent=PAYLOADS.custom.payload;$('custom-payload').value=PAYLOADS.custom.payload;bind();updateChoices();updateSummary();await loadUsers().catch(()=>{});await loadOverview();setInterval(loadOverview,30000)}
+init();
+</script>
+</body>
+</html>
