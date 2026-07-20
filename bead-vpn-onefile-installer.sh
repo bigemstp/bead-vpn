@@ -210,7 +210,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
-    location /ssh {
+    location = /ssh {
         proxy_pass http://127.0.0.1:10080;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
